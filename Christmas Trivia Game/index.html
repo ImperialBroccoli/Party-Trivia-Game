@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Trivia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('static/images/Background Two.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        .container {
+            margin-top: 20%;
+        }
+        .question {
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+        .lobby, .game {
+            display: block;
+        }
+        .game{
+            display: none;
+        }
+        .game h1 {
+            position: absolute;
+            bottom: 50px;
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+        .main-menu img {
+            margin-top: 10%;
+            border-radius: 12px;
+        }
+        .main-menu h1 {
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+        .lobby h1 {
+            margin-top: 20%;
+            font-size: 5em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="lobby" id="lobby">
+        <h1>Christmas Trivia</h1>
+    </div>
+    <div class="game" id="game">
+        <div class="container">
+            <div class="question" id="question">Loading question...</div>
+        </div>
+        <h1 id="counter">0/30</h1>
+    </div>
+
+    <script>
+        const mainMenu = document.getElementById("main-menu");
+        const lobby = document.getElementById("lobby");
+        const game = document.getElementById("game");
+        const questionElement = document.getElementById("question");
+        const counterElement = document.getElementById("counter");
+
+        let questions = [];
+        let currentIndex = 0;
+
+        // Load questions from text file
+        fetch("questions.txt")
+            .then(response => response.text())
+            .then(data => {
+                questions = data.trim().split("\n").map(q => q.replace(/\\n/g, "<br>"));
+                initializeGame();
+            })
+            .catch(error => console.error("Error loading questions:", error));
+
+        // Initialize the game
+        function initializeGame() {
+            document.addEventListener("keydown", (event) => {
+                if (event.code === "Space") {
+                    nextQuestion();
+                }
+            });
+
+            setTimeout(() => {
+                lobby.style.display = "none";
+                game.style.display = "block";
+                displayQuestion();
+            }, 10000);
+        }
+
+        // Display the current question
+        function displayQuestion() {
+            if (currentIndex < questions.length) {
+                questionElement.innerHTML = questions[currentIndex].replace("\\n", "<br>");
+                counterElement.textContent = `${currentIndex + 1}/${questions.length}`;
+            } else {
+                questionElement.innerHTML = "No more questions!";
+                counterElement.textContent = `${questions.length}/${questions.length}`;
+            }
+        }
+
+        // Show the next question
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                displayQuestion();
+            }
+        }
+    </script>
+</body>
+</html>

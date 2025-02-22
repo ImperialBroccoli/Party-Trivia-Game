@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('{{ url_for("static", filename="images/Background Two.png") }}');
+            background-repeat: no-repeat;
+
+            background-size: cover;
+        }
+        .container {
+            margin-top: 20%;
+            margin-inline: 10%;
+        }
+        .question {
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+
+        .lobby{
+            display: none;
+        }
+        .game{
+            display: none;
+        }
+        .game h1{
+            position: absolute;
+            bottom: 50px;
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+        }
+        .main-menu img{
+            margin-top: 10%;
+            border-radius: 12px;
+        }
+        .main-menu h1{
+            font-size: 3em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+        .lobby h1{
+            margin-top: 20%;
+            font-size: 5em;
+            color: #fffded;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-menu" id="main-menu">
+        <center><img src="{{ url_for('static', filename='images/Controll Screen QR.png') }}" alt=""></center>
+        <h1>Christmas Trivia Loading...</h1>
+    </div>
+    <div class="lobby" id="lobby">
+        <h1>Christmas Trivia</h1>
+    </div>
+    <div class="game" id="game">
+        <div class="container">
+            <div class="question" id="question">Loading question...</div>
+        </div>
+        <h1 id="counter">0/30</h1>
+        <script>
+            const questionElement = document.getElementById('question');
+            const counterElement = document.getElementById('counter');
+            var i = 0;
+            // Listen for server-sent events
+            const eventSource = new EventSource('/current-question');
+            eventSource.onmessage = function(event) {
+                // Directly set the innerHTML to allow <br> tags to render properly
+                const old = questionElement.innerHTML;
+
+                if(old != event.data){
+                    questionElement.innerHTML = event.data;
+                    counterElement.innerHTML = (i-1).toString() + "/30";
+                    i++;
+                    if(i == 2){
+                        const divElement = document.getElementById("main-menu"); 
+                        const divElement2 = document.getElementById("lobby"); 
+                        divElement.style.display = "none"; 
+                        divElement2.style.display = "block"; 
+                    }
+                    if(i == 3){
+                        const divElement = document.getElementById("lobby"); 
+                        const divElement2 = document.getElementById("game"); 
+                        divElement.style.display = "none"; 
+                        divElement2.style.display = "block"; 
+                    }
+                }
+            };
+        </script>
+    </div>
+    
+</body>
+</html> 
